@@ -1,13 +1,12 @@
 import os, requests, json
 
-class User:
+class API:
     def __init__(self, api_url, user_name):
         self.user_name = user_name
         self.config_file_name = f"{user_name}.json"
         self.api_url = api_url
         self.token = None
 
-    def register(self):
         if not os.path.exists(self.config_file_name):
             response = requests.post(self.api_url+"/api/users", json={ "user_name" : self.user_name })
             if response.status_code != 201:
@@ -34,6 +33,12 @@ class User:
 
     def get_status(self):
         return requests.get(f"{self.api_url}/api/users/{self.user_id}", headers=self.headers).json()
+
+    def get_games(self):
+        return requests.get(f"{self.api_url}/api/games", headers=self.headers).json()
+
+    def get_games_my_turn(self):
+        return requests.get(f"{self.api_url}/api/games?next_user_id={self.user_id}", headers=self.headers).json()
 
     def propose(self, game_type_id):
         return requests.post(f"{self.api_url}/api/games", headers=self.headers, json={ "game_type_id" : game_type_id })
