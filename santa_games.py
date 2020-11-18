@@ -37,8 +37,14 @@ class API:
     def get_games(self):
         return requests.get(f"{self.api_url}/api/games", headers=self.headers).json()
 
+    def get_proposed_games(self):
+        return requests.get(f"{self.api_url}/api/games?game_state_id=0", headers=self.headers).json()
+
     def get_games_my_turn(self):
         return requests.get(f"{self.api_url}/api/games?next_user_id={self.user_id}", headers=self.headers).json()
+
+    def get_game(self, game_id):
+        return requests.get(f"{self.api_url}/api/games/{game_id}", headers=self.headers).json()
 
     def propose(self, game_type_id):
         return requests.post(f"{self.api_url}/api/games", headers=self.headers, json={ "game_type_id" : game_type_id })

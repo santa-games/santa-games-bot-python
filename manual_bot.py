@@ -1,11 +1,11 @@
 import requests, time, json, datetime, os, random, logging
 import argparse, sys
-from santa_games import User
+from santa_games import API
 
 logging.basicConfig(level=logging.DEBUG)
 
-API_URL = os.environ.get("SANTA_GAMES_API_URL", "https://santa-games.azurewebsites.net")
-#API_URL = "http://localhost" 
+#API_URL = os.environ.get("SANTA_GAMES_API_URL", "https://santa-games.azurewebsites.net")
+API_URL = "http://localhost" 
 
 class ManualBot:
 
@@ -28,9 +28,8 @@ class ManualBot:
         user_name = args.user_name
         game_type_id = args.game_type_id
 
-        user = User(API_URL, user_name)
-        user.register()
-        response = user.propose(game_type_id)
+        api = API(API_URL, user_name)
+        response = api.propose(game_type_id)
         print(response.text)
 
     def accept(self):
@@ -42,9 +41,8 @@ class ManualBot:
         user_name = args.user_name
         game_id = args.game_id
 
-        user = User(API_URL, user_name)
-        user.register()
-        user.accept(game_id)
+        api = API(API_URL, user_name)
+        api.accept(game_id)
 
     def action(self):
         parser = argparse.ArgumentParser()
@@ -57,9 +55,8 @@ class ManualBot:
         game_id = args.game_id
         action = args.action
 
-        user = User(API_URL, user_name)
-        user.register()
-        user.action(game_id, action)
+        api = API(API_URL, user_name)
+        api.action(game_id, action)
 
 if __name__ == "__main__":
     ManualBot()
