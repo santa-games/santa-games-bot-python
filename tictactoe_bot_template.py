@@ -2,33 +2,29 @@ import requests, time, json, os, random
 import argparse, sys
 from santa_games import API
 
-parser = argparse.ArgumentParser()
-parser.add_argument("user_name")
-args = parser.parse_args(sys.argv[1:])
-
-#API_URL = "https://santa-games.azurewebsites.net"
-API_URL = "http://localhost"
-
+USER_NAME = "" # Enter a unique name here.
+API_URL = "https://santa-games.azurewebsites.net"
 REFRESH_RATE_SECONDS = 1
 
-api = API(API_URL, args.user_name)
-
+api = API(API_URL, USER_NAME)
 time.sleep(1)
 
+print("Starting the bot!")
 while True:
     time.sleep(REFRESH_RATE_SECONDS)
-    print("Doing something...")
+    print("Evaluating behaviour loop.")
 
     # get a list of games from the server where it's my turn
     games = api.get_games_my_turn()
     if len(games) > 0:
         for game_info in games:
             
-            # Extract the game_id from the response
+            # extract the game_id from the response
             game_id = game_info.get("game_id")
             if game_id is None:
-                print("Huh, game_id wasn't in the dictionary :/")
+                print(f"game_id [{game_id}] wasn't provided.")
                 continue
+
             print(f"Taking my turn for game [{game_id}]")
 
             # get the full game information
@@ -42,18 +38,23 @@ while True:
                 print("I kinda needed the game data to make my move...")
                 continue
 
-            # I'll choose a random free space (because totally the best strategy)
+            # get a list of the free spaces
             options = [i for i, c in enumerate(game_data) if c == ' ']
             if len(options) == 0:
                 print("Doesn't look like there's space for me to play..")
                 continue
 
-            option = random.choice(options)
-            print(f"I'm going to play at [{option}]")
+            # EDIT HERE
+            # =========
 
+            option = random.choice(options)
+
+            # =========
+
+            print(f"I'm going to play at [{option}]")
             response = api.action(game_id, option)
     else:
-        # I should see if someone wants to play a game..
+        # check if there are any proposed games
         proposed_games = api.get_proposed_games()
         valid_proposed_games = [proposed_game for proposed_game in proposed_games if proposed_game["host_user_id"] != api.user_id]
         
@@ -70,8 +71,7 @@ while True:
             if len(proposed_games) - len(valid_proposed_games) != 0:
                 continue
 
-            # I shall host my own game
-            print("I shall propose my own game...")
+            print("Proposing a new game")
             response = api.propose("0")
             print(response.json())
 
